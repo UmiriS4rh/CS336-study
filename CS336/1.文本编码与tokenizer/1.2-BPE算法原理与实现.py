@@ -95,4 +95,33 @@ def train_bpe(
                       prev_pair=(word[i-1],word[i])
                       stats[prev_pair]-=freq
                       if stats[prev_pair]==0:
-                          del stats[prev_pair]                        
+                          del stats[prev_pair]
+                  if i<len(word)-2:
+                      next_pair=(word[i+1],word[i+2])
+                      stats[next_pair]-=freq
+                      if stats[next_pair]==0:
+                          del stats[next_pair]
+                  word[i]=new_token
+                  del word[i+1]
+
+                  if i>0:
+                      new_prev=(word[i-1],word[i])
+                      stats[new_prev]+=freq
+                      indices[new_prev].add(idx)
+                  if i<len(word)-1:
+                      new_next=(word[i],word[i+1])
+                      stats[new_next]+=freq
+                      indices[new_next].add(idx)
+              else:
+                    i+=1
+      if best_pair in stats:
+            del stats[best_pair]
+      if best_pair in indices:
+            del indices[best_pair]
+    for pair in merges:
+        new_id=len(vocab)
+        vocab[new_id]=pair[0]+pair[1]
+    for s_tok in special_tokens:
+        s_bytes=s_tok.encode('utf-8')
+        vocab[len(vocab)]=s_bytes
+    return vocab,merges
