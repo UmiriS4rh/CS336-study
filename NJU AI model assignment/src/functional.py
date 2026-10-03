@@ -1,5 +1,5 @@
 import torch
-
+import torch.nn as nn
 
 def matmul_with_multi_head(
     A1: torch.Tensor,
@@ -38,7 +38,7 @@ def matmul_with_importance(
     """
 
     # =========================
-    # Task 2
+    
     # =========================
 
     # TODO
