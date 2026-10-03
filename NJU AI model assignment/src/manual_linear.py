@@ -1,8 +1,5 @@
 import torch
-
-
 class ManualLinear:
-
     def __init__(
         self,
         in_dim: int,
@@ -15,13 +12,11 @@ class ManualLinear:
 
         pass
 
-
+    
     def forward(self, x: torch.Tensor):
 
         self.input=x
         return x@self.W
-
-        
 
 
     def backward(self, grad_output: torch.Tensor):

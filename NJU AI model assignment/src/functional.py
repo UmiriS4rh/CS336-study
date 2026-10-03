@@ -33,9 +33,25 @@ def matmul_with_importance(
     top_k: int | None = None,
     grad_output: torch.Tensor | None = None,
 ):
-    """
-    Task 2 + Task 3
-    """
+
+    b,s,h=A1.shape
+    e=W1.shape[1]  
+    head_dim=h//num_heads
+    if top_k is None:
+        top_k=s
+    topk_indices=torch.topk(P, k=top_k, dim=1).indices  
+    topk_mask=torch.zeros_like(P, dtype=torch.bool)
+    topk_mask.scatter_(1, topk_indices, True)
+    important_mask=topk_mask & (P>=top_p)
+    A3=A1[important_mask]
+    t=A3.shape[0]
+    A3=A3.reshape(t,num_heads,head_dim).transpose(0,1)
+    W2=W1.reshape(num_heads, head_dim, e)
+    O3=torch.matmul(A3, W2)
+    O3=O3.transpose(0,1)
+    print(O3.shape)
+    return O3
+
 
     # =========================
     
@@ -57,7 +73,9 @@ seq_len=5
 hidden_dim=10
 embbed_dim=10
 num_heads=2
-head_dim=hidden_dim//num_heads
+P=torch.randn(batch_size, seq_len)
+top_k=3
+top_p=0.5
 A1=torch.randn(batch_size, seq_len, hidden_dim)
 W1=torch.randn(hidden_dim, embbed_dim)
-matmul_with_multi_head(A1, W1, num_heads)
+matmul_with_importance(A1, W1, P, num_heads, top_p=top_p, top_k=top_k)
