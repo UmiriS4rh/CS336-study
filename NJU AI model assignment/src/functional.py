@@ -50,23 +50,22 @@ def matmul_with_importance(
     O3=torch.matmul(A3, W2)
     O3=O3.transpose(0,1)
     print(O3.shape)
-    return O3
+    if grad_output is None:
+        dA1=None
+        dW1=None
+    else:
+        grad_heads = grad_output.transpose(0, 1)
+        dA3=torch.matmul(grad_heads,W2.transpose(1,2))
+        dA3=dA3.transpose(0,1).reshape(t, h)
+        dA1=torch.zeros_like(A1)
+        dA1[important_mask]=dA3
+        dW2=torch.matmul(A3.transpose(1,2),grad_heads)
+        dW1=dW2.reshape(h,e)
+    return O3, dA1, dW1
 
 
-    # =========================
-    
-    # =========================
-
-    # TODO
 
 
-    # =========================
-    # Task 3
-    # =========================
-
-    # TODO
-
-    raise NotImplementedError
 
 batch_size=2
 seq_len=5
